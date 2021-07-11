@@ -2,7 +2,3 @@ steps:
 - name: node
   entrypoint: npm
   args: ['install']
-
-- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-  entrypoint: 'bash'
-  args: ['gcloud app deploy']
