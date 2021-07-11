@@ -1,0 +1,27 @@
+{
+  "name": "wcrapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/willianwcr/wcrapp.git"
+  },
+  "author": "wcr.design",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/willianwcr/wcrapp/issues"
+  },
+  "homepage": "https://github.com/willianwcr/wcrapp#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.12"
+  }
+}
