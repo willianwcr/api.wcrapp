@@ -8,7 +8,7 @@ module.exports = class FigmaServices{
         const scope = 'file_read';
         const state = '123';
         const response_type = 'code';
-        const OAuthUrl = "https://www.figma.com/oauth?client_id="+client_id+"&redirect_uri="+encodeURIComponent(callback)+"&scope="+scope+"&state="+state+"&response_type="+response_type;
+        const OAuthUrl = "https://www.figma.com/oauth?client_id="+client_id+"&redirect_uri="+callback+"&scope="+scope+"&state="+state+"&response_type="+response_type;
         return OAuthUrl;
     }
 

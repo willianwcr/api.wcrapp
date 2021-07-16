@@ -16,14 +16,11 @@ module.exports = class SlackController{
     }
 
     static interactivity(req, res){
-        console.log('Interação: '+JSON.stringify(req.body));
+        console.log(req.body);
         res.send(req.body);
     }
 
     static commandFigma(req, res){
-        console.log(req.body);
-        console.log(FigmaServices.generateOAuth());
-        
         res.send({
             "blocks": [
                 {
@@ -49,21 +46,20 @@ module.exports = class SlackController{
                     ]
                 },
                 {
-                    "type": "section",
-                    "text": {
-                        "type": "mrkdwn",
-                        "text": "Test block with users select"
-                    },
-                    "accessory": {
-                        "type": "users_select",
-                        "placeholder": {
-                            "type": "plain_text",
-                            "text": "Select a user",
-                            "emoji": true
-                        },
-                        "action_id": "users_select-action"
-                    }
-                }
+                    "type": "actions",
+                    "elements": [
+                        {
+                            "type": "button",
+                            "text": {
+                                "type": "plain_text",
+                                "text": "Teste",
+                                "emoji": true
+                            },
+                            "value": "click_me_123",
+                            "action_id": "select_coffee"
+                        }
+                    ]
+                },
             ]
         });
     }
