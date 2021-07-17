@@ -8,7 +8,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/', require('./routes'));
    
-app.listen(3000, () => {
+app.listen(8080, () => {
     console.log("Server running");
     //sendMessage('#figmaslacktest', 'Server is running');
 });
