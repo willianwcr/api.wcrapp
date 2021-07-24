@@ -1,7 +1,11 @@
 const got = require('got');
+
+// Import Models
 const SlackOAuth = require('../models/SlackOAuth');
 const Webhook = require('../models/Webhook');
+const SlackFigma = require('../models/SlackFigma');
 
+// Import Services
 const FigmaServices = require('../services/FigmaServices');
 const SlackServices = require('../services/SlackServices');
 
@@ -21,47 +25,14 @@ module.exports = class SlackController{
     }
 
     static commandFigma(req, res){
-        res.send({
-            "blocks": [
-                {
-                    "type": "section",
-                    "text": {
-                        "type": "mrkdwn",
-                        "text": "Olá 👋 eu sou o wcr.app. Para utilizar essa função, você primeiro precisa conectar seu Figma:"
-                    }
-                },
-                {
-                    "type": "actions",
-                    "elements": [
-                        {
-                            "type": "button",
-                            "text": {
-                                "type": "plain_text",
-                                "text": "Conectar Figma",
-                                "emoji": true
-                            },
-                            "value": "click_me_123",
-                            "url": FigmaServices.generateOAuth()
-                        }
-                    ]
-                },
-                {
-                    "type": "actions",
-                    "elements": [
-                        {
-                            "type": "button",
-                            "text": {
-                                "type": "plain_text",
-                                "text": "Teste",
-                                "emoji": true
-                            },
-                            "value": "click_me_123",
-                            "action_id": "select_coffee"
-                        }
-                    ]
-                },
-            ]
-        });
+        console.log(req.body);
+
+        // Check if the user already have signed in
+        try{
+
+        }catch(err){
+
+        }
     }
 
     static button(req, res){
