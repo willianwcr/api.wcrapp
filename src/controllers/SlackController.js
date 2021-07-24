@@ -4,6 +4,7 @@ const got = require('got');
 const SlackOAuth = require('../models/SlackOAuth');
 const Webhook = require('../models/Webhook');
 const SlackFigma = require('../models/SlackFigma');
+const User = require('../models/User');
 
 // Import Services
 const FigmaServices = require('../services/FigmaServices');
@@ -24,15 +25,60 @@ module.exports = class SlackController{
         res.send(req.body);
     }
 
-    static commandFigma(req, res){
-        console.log(req.body);
+    static async commandFigma(req, res){
 
         // Check if the user already have signed in
-        try{
-
-        }catch(err){
-
-        }
+        const userDB = await User.findOne({
+            'slack.user_id' : req.body.user_id
+        }, async (err, result) => {
+            if(result){
+                // Usuário existe
+                // Verificar se o usuário já tem o time cadastrado na conta
+                if(result.slack.teams == undefined || result.slack.teams.filter(e => e.team_id == req.body.team_id).length > 0){
+                    // Time já está cadastrado na conta do usuário
+                }else{
+                    // Time ainda não está cadastrado na conta do usuário
+                    // Atualizar conta do usuário com o time
+                    await User.updateOne({
+                        'slack.user_id' : req.body.user_id
+                    },{
+                        $push: {
+                            'slack.teams': {
+                                team_id: req.body.team_id,
+                                team_domain: req.body.team_domain
+                            }
+                        }
+                    }, (err, result) => {
+                        if(err){
+                            // Erro ao atualizar cadastro
+                        }else{
+                            // Usuário atualizado com sucesso
+                        }
+                    });
+                }
+            }else{
+                // Usuário não existe
+                // Cadastrar o usuário no banco de dados
+                await User.create({
+                    slack: {
+                        user_id: req.body.user_id,
+                        user_name: req.body.user_name,
+                        teams: [
+                            {
+                                team_id: req.body.team_id,
+                                team_domain: req.body.team_domain
+                            }
+                        ]
+                    }   
+                }, (err, result) => {
+                    if(err){
+                        // Erro ao cadastrar o usuário
+                    }else{
+                        // Usuário cadastrado com sucesso
+                    }
+                });
+            }
+        });
     }
 
     static button(req, res){
