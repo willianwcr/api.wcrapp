@@ -1,4 +1,6 @@
 require('dotenv').config();
+require('debug').enable('*');
+const debug = require('debug')('wcrapp:server');
 const express = require('express');
 const { createMessageAdapter } = require('@slack/interactive-messages');
 const { WebClient } = require('@slack/web-api');
@@ -15,5 +17,5 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/', require('./routes'));
    
 app.listen(8080, () => {
-    console.log("Server running");
+    debug('Server running');
 });

@@ -4,9 +4,9 @@ const Slack = new WebClient(process.env.SLACK_TOKEN);
 
 module.exports = class SlackServices{
 
-    static async sendMessage(channel, text){
+    static async sendMessage(channel, blocks){
         await Slack.chat.postMessage({
-          channel, text
+          channel, blocks : blocks.blocks
         });
     }
 

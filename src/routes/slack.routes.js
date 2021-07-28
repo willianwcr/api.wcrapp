@@ -1,3 +1,4 @@
+const debug = require('debug')('wcrapp:routes:slack');
 const express = require('express');
 
 const router = express.Router();

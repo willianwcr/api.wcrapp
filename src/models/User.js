@@ -19,6 +19,31 @@ const UserSchema = new mongoose.Schema({
         },
         teams: [SlackTeam]
     },
+    figma: {
+        user_id : {
+            type: String
+        },
+        email : {
+            type: String
+        },
+        handle : {
+            type: String
+        },
+        img_url : {
+            type: String
+        },
+        token: {
+            access_token : {
+                type: String
+            },
+            refresh_token : {
+                type: String
+            },
+            expires_id : {
+                type: String
+            }
+        }
+    },
     createdAt: {
         type: Date,
         default: Date.now,

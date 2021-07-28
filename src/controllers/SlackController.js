@@ -1,14 +1,20 @@
+const debug = require('debug')('wcrapp:controller:slack');
 const got = require('got');
+
+// Init JWT
+var jwt = require('jsonwebtoken');
 
 // Import Models
 const SlackOAuth = require('../models/SlackOAuth');
 const Webhook = require('../models/Webhook');
-const SlackFigma = require('../models/SlackFigma');
 const User = require('../models/User');
 
 // Import Services
 const FigmaServices = require('../services/FigmaServices');
 const SlackServices = require('../services/SlackServices');
+
+// Import Slack Messages
+const SlackMessages = require('../messages/SlackMessages');
 
 module.exports = class SlackController{
 
@@ -28,18 +34,41 @@ module.exports = class SlackController{
     static async commandFigma(req, res){
 
         // Check if the user already have signed in
-        const userDB = await User.findOne({
+        let userDB = await User.findOne({
             'slack.user_id' : req.body.user_id
-        }, async (err, result) => {
+        }, (err, result) => {
             if(result){
                 // Usuário existe
                 // Verificar se o usuário já tem o time cadastrado na conta
-                if(result.slack.teams == undefined || result.slack.teams.filter(e => e.team_id == req.body.team_id).length > 0){
+                if(result.slack.teams !== undefined || result.slack.teams.filter(e => e.team_id == req.body.team_id).length > 0){
                     // Time já está cadastrado na conta do usuário
+                    // Verificar se o usuário já tem login no Figma
+                    console.log(result.figma);
+                    if(result.figma){
+                        // Usuário já conectou a conta do Figma
+                        // Enviar mensagens com comandos específicos
+                        debug('User already signed with Figma');
+                    }else{
+                        // Usuário ainda não conectou a conta do Figma
+                        debug('User still not have connected a Figma account');
+                        // Gerar Login
+
+                        // Generate Token
+                         var token = jwt.sign({
+                            user_id : result._id,
+                            exp: Math.floor(Date.now() / 1000) + (60 * 60)
+                        }, process.env.JWT_SECRET);
+
+                        // Generate Figma Login
+                        var figmaLogin = FigmaServices.generateOAuth(token);
+
+                        // Enviar mensagem de Login
+                        return res.json(SlackMessages.figmaSignin(figmaLogin));
+                    }
                 }else{
                     // Time ainda não está cadastrado na conta do usuário
                     // Atualizar conta do usuário com o time
-                    await User.updateOne({
+                    User.updateOne({
                         'slack.user_id' : req.body.user_id
                     },{
                         $push: {
@@ -48,18 +77,35 @@ module.exports = class SlackController{
                                 team_domain: req.body.team_domain
                             }
                         }
-                    }, (err, result) => {
+                    }, async (err, result) => {
                         if(err){
                             // Erro ao atualizar cadastro
+                            debug('Error updating user:', err);
+
+                            // Return error to user
                         }else{
                             // Usuário atualizado com sucesso
+                            debug('User updated successfully');
+                            // Verificar se o usuário já tem login no Figma
+
+                            // Generate Token
+                            var token = await jwt.sign({
+                                user_id : userDB._id,
+                                exp: Math.floor(Date.now() / 1000) + (60 * 60)
+                            }, process.env.JWT_SECRET);
+
+                            // Generate Figma Login
+                            var figmaLogin = FigmaServices.generateOAuth(token);
+
+                            // Enviar mensagem de Login
+                            return res.json(SlackMessages.figmaSignin(figmaLogin));
                         }
                     });
                 }
             }else{
                 // Usuário não existe
                 // Cadastrar o usuário no banco de dados
-                await User.create({
+                User.create({
                     slack: {
                         user_id: req.body.user_id,
                         user_name: req.body.user_name,
@@ -73,8 +119,24 @@ module.exports = class SlackController{
                 }, (err, result) => {
                     if(err){
                         // Erro ao cadastrar o usuário
+                        debug('Error creating user:', err);
+
+                        // Return error to user
                     }else{
                         // Usuário cadastrado com sucesso
+                        debug('User created successfully with id:', result.id);
+                        
+                         // Generate Token
+                         var token = jwt.sign({
+                            user_id : result._id,
+                            exp: Math.floor(Date.now() / 1000) + (60 * 60)
+                        }, process.env.JWT_SECRET);
+
+                        // Generate Figma Login
+                        var figmaLogin = FigmaServices.generateOAuth(token);
+
+                        // Enviar mensagem de Login
+                        return res.json(SlackMessages.figmaSignin(figmaLogin));
                     }
                 });
             }
